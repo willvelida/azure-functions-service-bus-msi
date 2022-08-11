@@ -88,9 +88,9 @@ resource "azurerm_windows_function_app" "funcapp" {
     }
 }
 
-resource "azurerm_role_assignment" "sbrole" {
+resource "azurerm_role_assignment" "sbsenderrole" {
     scope = azurerm_servicebus_namespace.sbnamespace.id
-    role_definition_name = var.owner_role
+    role_definition_name = var.sender_role
     principal_id = azurerm_windows_function_app.funcapp.identity.0.principal_id
 }
 
