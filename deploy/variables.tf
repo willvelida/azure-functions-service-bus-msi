@@ -4,8 +4,14 @@ variable "location" {
   description = "The Azure location where all resources in this sample should be deployed to."
 }
 
-variable "role_definition_name" {
+variable "owner_role" {
  type = string
  description = "The role assignment that this Function will have over Service Bus"
  default = "Azure Service Bus Data Owner"
+}
+
+variable "reader_role" {
+ type = string
+ description = "The role assignment that this Function will have over Service Bus"
+ default = "Azure Service Bus Data Receiver"
 }

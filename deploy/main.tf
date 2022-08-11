@@ -10,7 +10,11 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
 }
 
 resource "random_integer" "ri" {
@@ -57,11 +61,11 @@ resource "azurerm_service_plan" "asp" {
     name = "sbmi${random_integer.ri.result}asp"
     location = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
-    os_type = "Linux"
+    os_type = "Windows"
     sku_name = "Y1"
 }
 
-resource "azurerm_linux_function_app" "funcapp" {
+resource "azurerm_windows_function_app" "funcapp" {
     name = "sbmi${random_integer.ri.result}fa"
     location = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
@@ -73,6 +77,8 @@ resource "azurerm_linux_function_app" "funcapp" {
       "APPLICATIONINSIGHTS_CONNECTION_STRING" = "InstrumentationKey=${azurerm_application_insights.appins.instrumentation_key};IngestionEndpoint=https://australiaeast-1.in.applicationinsights.azure.com/;LiveEndpoint=https://australiaeast.livediagnostics.monitor.azure.com/"
       "QueueName" = "${azurerm_servicebus_queue.ordersqueue.name}"
       "ServiceBusConnection__fullyQualifiedNamespace" = "${azurerm_servicebus_namespace.sbnamespace.name}.servicebus.windows.net"
+      "ServiceBusConnection__credential" = "managedIdentity"
+      "ServiceBusConnection" = "${azurerm_servicebus_namespace.sbnamespace.name}.servicebus.windows.net"
     }
     site_config {
       application_insights_connection_string = azurerm_servicebus_namespace.sbnamespace.name
@@ -85,6 +91,12 @@ resource "azurerm_linux_function_app" "funcapp" {
 
 resource "azurerm_role_assignment" "sbrole" {
     scope = azurerm_servicebus_namespace.sbnamespace.id
-    role_definition_name = var.role_definition_name
-    principal_id = azurerm_linux_function_app.funcapp.identity.0.principal_id
+    role_definition_name = var.owner_role
+    principal_id = azurerm_windows_function_app.funcapp.identity.0.principal_id
+}
+
+resource "azurerm_role_assignment" "sbreaderrole" {
+  scope = azurerm_servicebus_namespace.sbnamespace.id
+    role_definition_name = var.reader_role
+    principal_id = azurerm_windows_function_app.funcapp.identity.0.principal_id
 }
