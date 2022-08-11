@@ -5,6 +5,12 @@
       "default": "None",
       "Function": "Information",
       "OrderProcessor": "Information"
+    },
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "excludedTypes": "Request"
+      }
     }
   }
 }

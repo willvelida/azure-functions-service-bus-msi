@@ -77,8 +77,7 @@ resource "azurerm_windows_function_app" "funcapp" {
       "APPLICATIONINSIGHTS_CONNECTION_STRING" = "InstrumentationKey=${azurerm_application_insights.appins.instrumentation_key};IngestionEndpoint=https://australiaeast-1.in.applicationinsights.azure.com/;LiveEndpoint=https://australiaeast.livediagnostics.monitor.azure.com/"
       "QueueName" = "${azurerm_servicebus_queue.ordersqueue.name}"
       "ServiceBusConnection__fullyQualifiedNamespace" = "${azurerm_servicebus_namespace.sbnamespace.name}.servicebus.windows.net"
-      "ServiceBusConnection__credential" = "managedIdentity"
-      "ServiceBusConnection" = "${azurerm_servicebus_namespace.sbnamespace.name}.servicebus.windows.net"
+      "ServiceBusEndpoint" = "${azurerm_servicebus_namespace.sbnamespace.name}.servicebus.windows.net"
     }
     site_config {
       application_insights_connection_string = azurerm_servicebus_namespace.sbnamespace.name

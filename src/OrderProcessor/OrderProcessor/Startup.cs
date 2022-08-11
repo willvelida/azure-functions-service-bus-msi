@@ -24,7 +24,7 @@ namespace OrderProcessor
             builder.Services.AddSingleton(sp =>
             {
                 IConfiguration config = sp.GetRequiredService<IConfiguration>();
-                return new ServiceBusClient(config["ServiceBusConnection"], new DefaultAzureCredential());
+                return new ServiceBusClient(config["ServiceBusEndpoint"], new DefaultAzureCredential());
             });
         }
     }
